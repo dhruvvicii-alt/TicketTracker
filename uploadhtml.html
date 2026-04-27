@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyWorkspace — Tech Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f;--bg2:#141416;--bg3:#1a1a1e;--bg4:#222226;
+  --border:#252528;--border2:#333338;
+  --text:#e8e8ec;--text2:#7a7a8a;--text3:#44444e;
+  --blue:#c8a97e;--blue-dim:rgba(200,169,126,.1);--blue-glow:rgba(200,169,126,.18);
+  --green:#4a9e6b;--green-dim:rgba(74,158,107,.1);
+  --amber:#c8a97e;--amber-dim:rgba(200,169,126,.1);
+  --red:#c0392b;--red-dim:rgba(192,57,43,.12);
+  --purple:#8b7fb8;--purple-dim:rgba(139,127,184,.1);
+  --r:6px;--rs:4px;--rl:8px;
+  --font:'Source Sans 3','Segoe UI',sans-serif;--serif:'Lora',Georgia,serif;--mono:'JetBrains Mono','Fira Mono',monospace;
+}
+body.light{
+  --bg:#f5f4f2;--bg2:#ffffff;--bg3:#efeeec;--bg4:#e5e4e0;
+  --border:#dddbd6;--border2:#cbc9c3;
+  --text:#1a1a18;--text2:#5a5a52;--text3:#9a9a90;
+  --blue:#8b6914;--blue-dim:rgba(139,105,20,.1);--blue-glow:rgba(139,105,20,.18);
+  --green:#2d6e49;--green-dim:rgba(45,110,73,.08);
+  --amber:#8b6914;--amber-dim:rgba(139,105,20,.08);
+  --red:#a82318;--red-dim:rgba(168,35,24,.08);
+  --purple:#5f5494;--purple-dim:rgba(95,84,148,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;letter-spacing:.01em}
+.shell{display:grid;grid-template-columns:220px 1fr;grid-template-rows:52px 1fr;height:100vh;transition:grid-template-columns .22s ease}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:10;height:52px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:30px;height:30px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.logo-name{font-size:15px;font-weight:700;font-family:var(--font);letter-spacing:.12em;line-height:1;text-transform:uppercase}
+.logo-sub{font-size:9px;color:var(--text3);font-family:var(--mono);margin-top:2px;letter-spacing:.14em;text-transform:uppercase}
+  100%{background-position:300% center}
+}
+  50%{transform:scale(1.6);opacity:.4;box-shadow:0 0 16px #c4b5fd}
+}
+  50%{transform:scale(1.5);opacity:.5;box-shadow:0 0 14px #a78bfa}
+}
+.topbar-r{display:flex;align-items:center;gap:16px}
+.live{display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sm-txt{font-size:11px;color:var(--text3);font-family:var(--mono)}
+#clock{font-size:12px;color:var(--text2);font-family:var(--mono);letter-spacing:.04em}
+
+/* SIDEBAR */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border2);padding:14px 10px;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;transition:padding .22s ease}
+.sidebar.collapsed{padding:14px 6px}
+.shell.collapsed{grid-template-columns:48px 1fr}
+.sidebar-text{transition:opacity .18s ease,width .18s ease}
+.shell.collapsed .sidebar-text{opacity:0;width:0;overflow:hidden;display:inline-block}
+.shell.collapsed .nav-sec{opacity:0;height:0;padding:0;overflow:hidden}
+.shell.collapsed .nav-spacer{display:none}
+.shell.collapsed .sf{padding-top:6px}
+.shell.collapsed .sf>div:first-child{display:none}
+.shell.collapsed #save-file-btn span,.shell.collapsed .eb span{display:none}
+.shell.collapsed .ni{justify-content:center;padding:10px 6px}
+.shell.collapsed .ni svg{margin:0}
+.shell.collapsed .eb{justify-content:center;padding:8px 6px}
+.shell.collapsed #sidebar-toggle{justify-content:center;padding:7px 6px}
+.shell-toggle{width:28px;height:28px;border-radius:var(--rs);border:1px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .15s;flex-shrink:0}
+.shell-toggle:hover{background:var(--bg3);color:var(--text)}
+.shell-toggle svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .22s}
+.nav-sec{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.18em;padding:14px 10px 4px;font-family:var(--mono)}
+.nav-sec:first-child{padding-top:4px}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:400;color:var(--text2);border:none;background:transparent;width:100%;text-align:left;font-family:var(--font);transition:all .13s;position:relative;letter-spacing:.04em}
+.ni svg{width:14px;height:14px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.7;transition:opacity .13s}
+.ni:hover{background:var(--bg3);color:var(--text)}
+.ni:hover svg{opacity:1}
+.ni.active{background:var(--blue-dim);color:var(--blue);font-weight:600;letter-spacing:.04em}
+.ni.active svg{opacity:1}
+.ni.active::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:2px;background:var(--blue);border-radius:0 1px 1px 0}
+.nav-spacer{flex:1}
+.sf{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.eb{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;font-size:12px;color:var(--text3);border:1px solid var(--border);background:transparent;width:100%;text-align:left;font-family:var(--font);transition:all .13s}
+.eb:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.eb svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* MAIN */
+.main{overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+.page{display:none;flex-direction:column;gap:18px;animation:fi .2s ease}
+.page.active{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;cursor:default}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi-stripe{position:absolute;top:0;left:0;width:2px;top:0;bottom:0;height:auto}
+.kpi-lbl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;font-family:var(--mono)}
+.kpi-val{font-size:26px;font-weight:300;letter-spacing:-.01em;line-height:1;font-family:var(--mono)}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px;font-family:var(--mono);letter-spacing:.04em}
+
+/* PANEL */
+.panel{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);overflow:hidden}
+.ph{padding:11px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pt{font-size:11px;font-weight:600;color:var(--text2);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.pb{padding:18px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* FIELDS */
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:9px;font-weight:600;color:var(--text3);margin-bottom:6px;letter-spacing:.14em;text-transform:uppercase;font-family:var(--mono)}
+input[type=text],input[type=number],input[type=email],select,textarea{
+  width:100%;font-size:13px;color:var(--text);background:var(--bg3);
+  border:1px solid var(--border2);border-radius:var(--r);
+  padding:9px 12px;outline:none;font-family:var(--font);letter-spacing:.01em;
+  transition:border-color .15s,background .15s
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);background:var(--bg4);box-shadow:0 0 0 3px var(--blue-glow)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;line-height:1.65;min-height:110px}
+select option{background:var(--bg3);color:var(--text)}
+
+/* TOGGLE */
+.toggle-row{display:flex;gap:6px}
+.tog{flex:1;padding:9px 6px;border:1px solid var(--border2);border-radius:20px;background:transparent;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--font);text-align:center;transition:all .13s}
+.tog:hover{border-color:var(--border2);color:var(--text)}
+.tog.phone{background:var(--blue-dim);color:var(--blue);border-color:var(--blue)}
+.tog.email{background:var(--amber-dim);color:var(--amber);border-color:var(--amber)}
+
+/* AC */
+.ac-wrap{position:relative}
+.ac-drop{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;border:1px solid var(--border2);border-radius:var(--rs);background:var(--bg3);max-height:200px;overflow-y:auto;z-index:500;box-shadow:0 10px 32px rgba(0,0,0,.55)}
+.ac-drop.open{display:block}
+.ac-item{padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:background .1s}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover{background:var(--bg4)}
+.ac-item:hover .ac-text{color:var(--blue)}
+.ac-text{font-size:13px;color:var(--text)}
+.ac-meta{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.ac-sub{font-size:11px;color:var(--text3);margin-top:2px}
+mark{background:none;font-weight:600;color:var(--blue)}
+.freq-bar{height:2px;border-radius:1px;background:var(--blue);opacity:.35;margin-top:4px}
+
+/* CHIPS */
+.chip-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--bg4);border:1px solid var(--border2);font-size:11px;cursor:pointer;color:var(--text2);transition:all .12s}
+.chip:hover{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+/* INLINE ADD */
+.inline-add{display:flex;gap:6px;margin-top:8px}
+.inline-add input{flex:1;font-size:12px;padding:7px 10px}
+
+/* OUT BOX */
+.out-box{background:#0a0a0c;border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;font-size:12px;font-family:var(--mono);color:#a0c8a0;line-height:1.8;min-height:60px;word-break:break-all;letter-spacing:.02em}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{font-size:11px;font-weight:500;letter-spacing:.04em;padding:7px 16px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:var(--font);transition:all .12s;display:inline-flex;align-items:center;gap:6px}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn:hover{background:var(--bg3);border-color:var(--border2);color:var(--text)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--blue);color:#0d0d0f;border-color:var(--blue);font-weight:600}
+.btn-p:hover{opacity:.88;background:var(--blue)}
+.btn-s{background:var(--green-dim);color:var(--green);border-color:rgba(62,207,142,.3)}
+.btn-s:hover{opacity:.85;background:var(--green-dim)}
+.btn-d{background:var(--red-dim);color:var(--red);border-color:rgba(240,78,78,.3)}
+.btn-d:hover{opacity:.85;background:var(--red-dim)}
+.btn-sm{font-size:11px;padding:5px 11px}
+
+/* TOAST */
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:9999;display:none;padding:9px 20px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;font-family:var(--font)}
+.tok{background:var(--green-dim);color:var(--green);border:1px solid rgba(62,207,142,.3)}
+.terr{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,78,78,.3)}
+
+/* AF NOTE */
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--bg3);color:var(--text3);font-weight:500;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3);color:var(--text)}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;font-family:var(--mono);white-space:nowrap;letter-spacing:.04em}
+.bb{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(79,142,247,.2)}
+.ba{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.bg{background:var(--green-dim);color:var(--green);border:1px solid rgba(62,207,142,.2)}
+.bp{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.2)}
+
+/* AVATAR */
+.av{width:30px;height:30px;border-radius:50%;background:var(--blue-dim);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--blue);flex-shrink:0;font-family:var(--mono)}
+
+/* DB ROW */
+.db-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--r);border:1px solid var(--border);margin-bottom:6px;background:var(--bg3);transition:border-color .15s}
+.db-row:hover{border-color:var(--border2)}
+.db-row:last-child{margin-bottom:0}
+
+/* BARS */
+.bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bar-label{font-size:12px;color:var(--text2);width:155px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--blue);opacity:.65;transition:width .5s ease}
+.bar-count{font-size:11px;color:var(--text3);font-family:var(--mono);width:22px;text-align:right}
+
+/* PILLS */
+.pill-group{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border);font-size:11px;cursor:pointer;background:transparent;color:var(--text3);font-family:var(--font);transition:all .13s}
+.pill:hover{border-color:var(--border2);color:var(--text2)}
+.pill.on{background:var(--blue-dim);border-color:rgba(79,142,247,.3);color:var(--blue)}
+
+.mic-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;font-family:var(--font);transition:all .15s}
+.mic-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+.mic-btn.listening{background:var(--red-dim);border-color:var(--red);color:var(--red);animation:mic-pulse 1.2s ease-in-out infinite}
+.mic-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+@keyframes mic-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.field-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.field-label-row label{margin-bottom:0}
+.shortcut-hint{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:.04em}
+
+hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+.cust-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);color:var(--text2);transition:all .13s}
+.cust-tab:hover{background:var(--bg3);color:var(--text)}
+.cust-tab.active{background:var(--blue-dim);color:var(--blue);border-color:rgba(79,142,247,.35)}
+.cust-cat-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.cust-cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:10px}
+.cust-cat-hdr:hover{background:var(--bg4)}
+.cust-cat-title{font-size:13px;font-weight:600;letter-spacing:.02em}
+.cust-cat-body{padding:10px 14px;border-top:1px solid var(--border);display:none}
+.cust-cat-body.open{display:block}
+.cust-btn-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.cust-btn-item{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;border:1px solid var(--border2);background:var(--bg4);font-size:12px;color:var(--text)}
+.cust-btn-del{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:0;line-height:1;transition:color .12s}
+.cust-btn-del:hover{color:var(--red)}
+.cust-add-btn-row{display:flex;gap:6px;margin-top:6px}
+.cust-add-btn-row input{flex:1;font-size:12px;padding:6px 10px}
+/* STICKY NOTES */
+.sn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:20px 24px}
+.sn-add-bar{display:flex;gap:10px;align-items:flex-start;padding:20px 24px 0}
+.sn-add-bar textarea{flex:1;min-height:80px;resize:vertical;font-family:var(--font);font-size:14px;line-height:1.6}
+.sn-add-btn{padding:10px 18px;border-radius:var(--rs);border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .13s;white-space:nowrap}
+.sn-add-btn:hover{background:var(--bg3);color:var(--text)}
+.sn-card{border-radius:var(--r);padding:14px 16px;min-height:100px;position:relative;display:flex;flex-direction:column;gap:8px;transition:transform .15s,border-color .15s}
+.sn-card:hover{transform:translateY(-2px)}
+.sn-card:hover .sn-del{opacity:1}
+.sn-body{font-family:var(--font);font-size:13px;line-height:1.65;color:inherit;word-break:break-word;flex:1;white-space:pre-wrap;outline:none;cursor:text;border-radius:4px}
+.sn-body:focus{background:rgba(255,255,255,.06)}
+.sn-meta{font-size:10px;opacity:.55;font-family:var(--mono);letter-spacing:.04em}
+.sn-del{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,.25);color:inherit;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s,background .13s;line-height:1}
+.sn-del:hover{background:rgba(0,0,0,.45)}
+.sn-empty{padding:48px 24px;text-align:center;color:var(--text3);font-size:14px}
+.sn-color-row{display:flex;gap:6px;align-items:center}
+.sn-dot{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .13s,border-color .13s;flex-shrink:0}
+.sn-dot:hover{transform:scale(1.15)}
+.sn-dot.sel{border-color:rgba(255,255,255,.5)}
+.mdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px}
+.mp{background:var(--blue)}
+.me{background:var(--amber)}
+.sr-row{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.sr-row input{flex:1}
+
+
+/* FLOATING CATEGORY BUTTONS */
+.fcat-wrap{margin-top:10px}
+.fcat-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.fcat-toggle{display:inline-flex;align-items:center;gap:6px;padding:6px 13px 6px 10px;border-radius:20px;border:1.5px solid;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .15s;letter-spacing:.03em;position:relative}
+.fcat-toggle svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;transition:transform .2s;flex-shrink:0}
+.fcat-toggle.open svg{transform:rotate(45deg)}
+.fcat-btns{display:none;flex-wrap:wrap;gap:5px;margin-bottom:8px;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--border);align-items:center}
+.fcat-btns.open{display:flex}
+.fb{padding:5px 13px;border-radius:20px;border:1px solid;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .13s;white-space:nowrap;letter-spacing:.02em}
+.fb:active{transform:scale(.95)}
+.fb-del{padding:3px 7px;border-radius:20px;border:none;background:transparent;font-size:13px;cursor:pointer;color:var(--text3);transition:all .13s;line-height:1;opacity:0;margin-left:-4px}
+.fcat-btns:hover .fb-del{opacity:.5}
+.fb-del:hover{opacity:1!important;color:var(--red)}
+.fcat-add-row{display:flex;gap:5px;align-items:center;margin-top:4px;width:100%}
+.fcat-add-row input{font-size:11px;padding:4px 9px;border-radius:20px;border:1px dashed var(--border2);background:var(--bg4);color:var(--text2);font-family:var(--font);outline:none;width:160px;transition:border-color .15s}
+.fcat-add-row input:focus{border-color:var(--border2);border-style:solid}
+.fcat-add-row button{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);transition:all .13s}
+.fcat-add-row button:hover{background:var(--bg4);color:var(--text)}
+.add-cat-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px;padding:8px 10px;background:var(--bg3);border-radius:var(--rs);border:1px dashed var(--border2)}
+.add-cat-row input{font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-family:var(--font);outline:none}
+.add-cat-row input:focus{border-color:var(--border2)}
+.add-cat-row select{font-size:11px;padding:5px 8px;border-radius:20px;border:1px solid var(--border);background:var(--bg4);color:var(--text2);font-family:var(--font);outline:none;cursor:pointer}
+.add-cat-row button{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);border:1px solid var(--border2);background:var(--bg3);color:var(--text);transition:all .13s}
+.add-cat-row button:hover{background:var(--bg4)}
+.add-cat-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.07em}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="shell">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 17 17"><rect x="1.5" y="2.5" width="14" height="11" rx="2"/><path d="M5 15h7M8.5 13v2M4 6.5h9M4 9h6"/></svg>
+    </div>
+    <div>
+      <div class="logo-name"><span class="sidebar-text">MyWorkspace</span></div>
+      <div class="logo-sub sidebar-text">Tech support · ticket tracker</div>
+    </div>
+  </div>
+
+  <div class="topbar-r" style="justify-content:flex-end">
+    <span class="sm-txt" id="storage-txt"></span>
+    <div class="live"><div class="dot"></div><span class="sm-txt">Live</span></div>
+    <span id="clock"></span>
+    <button id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode" style="background:transparent;border:1px solid var(--border2);border-radius:20px;padding:5px 10px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--text2);font-family:var(--font);transition:all .15s">
+      <span id="theme-icon" style="font-size:14px;line-height:1">🌙</span>
+      <span id="theme-lbl">Dark</span>
+    </button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <button class="shell-toggle" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar" style="width:100%;border-radius:var(--rs);justify-content:flex-start;gap:8px;padding:7px 10px;margin-bottom:8px;border-color:var(--border)">
+    <svg id="toggle-icon" viewBox="0 0 15 15"><path d="M2 4h11M2 7.5h11M2 11h11"/></svg>
+    <span class="sidebar-text" style="font-size:12px;font-weight:500;letter-spacing:.04em">Menu</span>
+  </button>
+  <div class="nav-sec">Workspace</div>
+  <button class="ni active" id="nav-new" onclick="nav('new',this)">
+    <svg viewBox="0 0 15 15"><rect x="1" y="1" width="13" height="13" rx="2"/><path d="M7.5 4.5v6M4.5 7.5h6"/></svg><span class="sidebar-text">New ticket</span>
+  </button>
+
+  <div class="nav-sec">Databases</div>
+  <div class="nav-sec">Tools</div>
+  <button class="ni" id="nav-notepad" onclick="nav('notepad',this)">
+    <svg viewBox="0 0 15 15"><path d="M3 2h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M5 5h5M5 7.5h5M5 10h3"/></svg><span class="sidebar-text">Notepad</span>
+  </button>
+  <button class="ni" id="nav-customise" onclick="nav('customise',this)">
+    <svg viewBox="0 0 15 15"><circle cx="7.5" cy="7.5" r="2"/><path d="M7.5 1v2M7.5 12v2M1 7.5h2M12 7.5h2M3.1 3.1l1.4 1.4M10.5 10.5l1.4 1.4M10.5 3.1l-1.4 1.4M4.5 10.5l-1.4 1.4"/></svg><span class="sidebar-text">Customise</span>
+  </button>
+  <div class="nav-spacer"></div>
+  <div class="sf">
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">My signature</div>
+      <input type="text" id="sig-input" placeholder="Your signature..." oninput="setSIG(this.value)" style="font-size:12px;padding:7px 10px;font-family:var(--mono);width:100%">
+      <div id="sig-preview" style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:5px;word-break:break-all;line-height:1.4"></div>
+    </div>
+    <button id="save-file-btn" class="eb" onclick="saveToFile()" style="width:100%;justify-content:center;margin-bottom:6px;font-weight:600;font-size:12px;padding:9px 10px;transition:all .2s">
+      <svg viewBox="0 0 13 13"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><path d="M4 1.5v3.5h5V1.5M4 13v-4h5v4"/></svg><span class="sidebar-text">Save to file</span>
+    </button>
+    <button class="eb" onclick="exportAll()">
+      <svg viewBox="0 0 13 13"><path d="M6.5 1v8M4 7l2.5 2.5L9 7"/><path d="M1.5 10v1.5h10V10"/></svg><span class="sidebar-text">Export backup</span>
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- NEW TICKET -->
+<div class="page active" id="page-new">
+  <div class="two-col">
+    <!-- LEFT -->
+    <div class="panel">
+      <div class="ph"><span class="pt">Ticket details</span></div>
+      <div class="pb">
+        <div class="field">
+          <label>SR # / Member name</label>
+          <input type="text" id="f-sr" placeholder="Enter SR#..." autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Contact method</label>
+          <div class="toggle-row">
+            <button class="tog phone" id="tog-phone" onclick="setMethod('phone')">Phone first</button>
+            <button class="tog" id="tog-email" onclick="setMethod('email')">Email first</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Issue</label>
+          <div class="ac-wrap">
+            <input type="text" id="f-issue" placeholder="Search or enter custom issue..." oninput="ac('f-issue','drop-issue','issues')" onfocus="ac('f-issue','drop-issue','issues')" autocomplete="off">
+            <div class="ac-drop" id="drop-issue"></div>
+          </div>
+          <div class="chip-row" id="chips-issue"></div>
+          <div class="inline-add">
+            <input type="text" id="qi-issue" placeholder="Save new issue to database...">
+            <button class="btn btn-sm" onclick="quickSave('issues','qi-issue')">+ Save</button>
+          </div>
+        </div>
+        <div class="field">
+          <label># of Repairs</label>
+          <input type="number" id="f-repairs" placeholder="0" min="0" value="0" style="max-width:110px">
+        </div>
+        <div class="field">
+          <div class="field-label-row">
+            <label>Actions already taken</label>
+            <button class="mic-btn" id="mic-btn-prev" onclick="toggleMic('f-prev','mic-btn-prev','mic-label-prev')" title="Click to dictate">
+              <svg viewBox="0 0 13 13"><rect x="4" y="1" width="5" height="7" rx="2.5"/><path d="M2 6.5a4.5 4.5 0 0 0 9 0"/><path d="M6.5 11v1.5"/></svg>
+              <span id="mic-label-prev">Dictate</span>
+            </button>
+          </div>
+          <textarea id="f-prev" placeholder="Select from categories below or type freely..." rows="3" style="margin-bottom:8px"></textarea>
+          <div id="fcat-prev-dynamic"></div>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT -->
+    <div class="panel">
+      <div class="ph"><span class="pt">Actions & output</span></div>
+      <div class="pb" style="display:flex;flex-direction:column">
+        <div class="field">
+          <div class="field-label-row">
+            <label>Actions taken today</label>
+            <button class="mic-btn" id="mic-btn-today" onclick="toggleMic('f-today','mic-btn-today','mic-label-today')" title="Click to dictate">
+              <svg viewBox="0 0 13 13"><rect x="4" y="1" width="5" height="7" rx="2.5"/><path d="M2 6.5a4.5 4.5 0 0 0 9 0"/><path d="M6.5 11v1.5"/></svg>
+              <span id="mic-label-today">Dictate</span>
+            </button>
+          </div>
+          <textarea id="f-today" placeholder="Select categories below, dictate with the mic, or type freely — items are added with commas automatically." rows="6"></textarea>
+          <div id="fcat-today-dynamic" style="margin-top:8px"></div>
+        </div>
+        <hr>
+        <div class="field">
+          <label>Generated ticket string</label>
+          <div class="out-box" id="output">Fill the fields on the left and click Build ticket.</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-p" onclick="buildTicket()">
+            <svg viewBox="0 0 13 13"><path d="M1 6.5h11M7 2l4.5 4.5L7 11"/></svg>Build ticket
+          </button>
+          <button class="btn btn-s" onclick="archiveTicket()">
+            <svg viewBox="0 0 13 13"><path d="M1.5 8v3h10V8"/><path d="M4 5.5l2.5 2.5L9 5.5M6.5 1v7"/></svg>Archive + clear
+          </button>
+          <button class="btn" onclick="clearForm()">Clear</button>
+          <button class="btn btn-sm" onclick="copyOut()">Copy</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap">
+          <span class="shortcut-hint">Ctrl+Enter — build & copy</span>
+          <span class="shortcut-hint">Ctrl+Space — new ticket</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- NOTEPAD -->
+<div class="page" id="page-notepad">
+  <div class="sn-add-bar">
+    <textarea id="sn-input" placeholder="Write a note..."></textarea>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+      <div class="sn-color-row" id="sn-color-row">
+        <div class="sn-dot sel" data-color="amber" style="background:#f59e0b" onclick="selectSNColor(this)"></div>
+        <div class="sn-dot" data-color="blue" style="background:#4f8ef7" onclick="selectSNColor(this)"></div>
+        <div class="sn-dot" data-color="green" style="background:#3ecf8e" onclick="selectSNColor(this)"></div>
+        <div class="sn-dot" data-color="purple" style="background:#a78bfa" onclick="selectSNColor(this)"></div>
+        <div class="sn-dot" data-color="coral" style="background:#fb7185" onclick="selectSNColor(this)"></div>
+        <div class="sn-dot" data-color="gray" style="background:#6b7280" onclick="selectSNColor(this)"></div>
+      </div>
+      <button class="sn-add-btn" onclick="addStickyNote()">+ Add note</button>
+    </div>
+  </div>
+  <div class="sn-grid" id="sn-grid"></div>
+</div>
+
+<!-- CUSTOMISE -->
+<div class="page" id="page-customise">
+  <div class="panel">
+    <div class="ph"><span class="pt">Customise categories</span><span style="font-size:11px;color:var(--text3)">Changes apply instantly to the ticket form</span></div>
+    <div class="pb">
+      <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="cust-tab active" id="ctab-prev" onclick="setCustTab('prev',this)">Actions already taken</button>
+        <button class="cust-tab" id="ctab-today" onclick="setCustTab('today',this)">Actions taken today</button>
+        <button class="cust-tab" id="ctab-notepad" onclick="setCustTab('notepad',this)">Notepad</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <input type="text" id="cust-cat-name" placeholder="New category name..." style="flex:1;min-width:160px">
+        <select id="cust-cat-color" style="width:110px">
+          <option value="blue">Blue</option><option value="green">Green</option>
+          <option value="amber">Amber</option><option value="pink">Pink</option>
+          <option value="purple">Purple</option><option value="teal">Teal</option>
+          <option value="coral">Coral</option><option value="red">Red</option>
+        </select>
+        <button class="btn btn-p btn-sm" onclick="custAddCategory()">+ Add category</button>
+      </div>
+      <div id="cust-cat-list"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+/* ===SAVEDATA===
+{
+  "sig": "DhruvkumarPMTLCTWS",
+  "notes": [],
+  "stickies": [],
+  "fcats": null,
+  "db": null
+}
+===SAVEDATA=== */
+
+function getRawSaveData(){
+  try{
+    const src=document.documentElement.outerHTML;
+    const m=src.match(/===SAVEDATA===([\s\S]*?)===SAVEDATA===/);
+    if(m)return JSON.parse(m[1].trim());
+  }catch(e){}
+  return {sig:'DhruvkumarPMTLCTWS',notes:[],stickies:[],fcats:null,db:null};
+}
+
+function getSIG(){return LIVE.sig||getRawSaveData().sig||'DhruvkumarPMTLCTWS';}
+function setSIG(v){
+  LIVE.sig=v.trim();
+  updateSigDisplay();
+  markUnsaved();
+}
+const DEF={
+  issues:[
+    {text:'Screen not turning on',cat:'hardware',freq:0},{text:'Battery draining fast',cat:'hardware',freq:0},
+    {text:'Charging port damaged',cat:'damage',freq:0},{text:'Software crash / freeze',cat:'software',freq:0},
+    {text:'Water damage',cat:'damage',freq:0},{text:'Keyboard malfunction',cat:'hardware',freq:0},
+    {text:'Camera not working',cat:'hardware',freq:0},{text:'Microphone not working',cat:'hardware',freq:0},
+    {text:'Speaker not working',cat:'hardware',freq:0},{text:'Wi-Fi / Bluetooth issues',cat:'software',freq:0},
+    {text:'Touchscreen unresponsive',cat:'hardware',freq:0},{text:'Overheating',cat:'hardware',freq:0},
+    {text:'Device not recognized by PC',cat:'software',freq:0},{text:'Password / login issue',cat:'software',freq:0},
+    {text:'Data recovery request',cat:'software',freq:0},{text:'Physical damage — cracked frame',cat:'damage',freq:0},
+    {text:'Display flickering',cat:'hardware',freq:0},{text:'Power button stuck',cat:'hardware',freq:0},
+  ],
+  actions:[
+    {text:'Device tested and functional',freq:0},{text:'Ran diagnostics — no faults found',freq:0},
+    {text:'Part ordered — awaiting delivery',freq:0},{text:'Replaced screen assembly',freq:0},
+    {text:'Battery replaced',freq:0},{text:'Software reflashed / factory reset',freq:0},
+    {text:'Escalated to Tier 2',freq:0},{text:'Customer notified — awaiting pickup',freq:0},
+    {text:'Repair quote sent to customer',freq:0},{text:'Water damage treatment applied',freq:0},
+    {text:'Charging port cleaned / replaced',freq:0},{text:'Keyboard replaced',freq:0},
+    {text:'Data backed up successfully',freq:0},{text:'Device returned to customer',freq:0},
+    {text:'Waiting on customer approval',freq:0},{text:'Under warranty — no charge',freq:0},
+    {text:'Out of warranty — charge applied',freq:0},{text:'Issue could not be reproduced',freq:0},
+  ],
+  log:[]
+};
+
+function load(){
+  const saved=getRawSaveData();
+  if(saved.db) return saved.db;
+  return JSON.parse(JSON.stringify(DEF));
+}
+function save(){
+  LIVE.db=DB;
+  markUnsaved();
+}
+
+let DB=load();
+// In-memory working copy of all persistent data
+const LIVE={sig:null,notes:null,fcats:null,stickies:null,db:null,unsaved:false};
+(function initLive(){
+  const d=getRawSaveData();
+  LIVE.sig=d.sig||'DhruvkumarPMTLCTWS';
+  LIVE.notes=d.notes||[];
+  LIVE.fcats=d.fcats||null;
+  LIVE.db=d.db||null;
+})();
+
+let cMethod='phone',issueCat='all';
+let sel={issue:[]};
+
+setInterval(()=>{const el=document.getElementById('clock');if(el)el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});},1000);
+
+function nav(p,btn){
+  if(typeof micActive!=='undefined'&&micActive)stopMic(true);
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  btn.classList.add('active');
+  if(p==='log')renderLog();
+  if(p==='notepad')renderStickyNotes();
+  if(p==='customise'){custScope='prev';renderCustPage();}
+}
+
+
+function saveNote(){
+  markUnsaved();
+}
+
+// ── FCAT COLOR PALETTES ───────────────────────────────────────────────────
+const FCAT_COLORS={
+  blue:  {bg:'rgba(79,142,247,.13)',border:'rgba(79,142,247,.4)',text:'#4f8ef7',fbg:'rgba(79,142,247,.08)',ftext:'#4f8ef7',fborder:'rgba(79,142,247,.3)'},
+  green: {bg:'rgba(62,207,142,.13)',border:'rgba(62,207,142,.4)',text:'#3ecf8e',fbg:'rgba(62,207,142,.08)',ftext:'#3ecf8e',fborder:'rgba(62,207,142,.3)'},
+  amber: {bg:'rgba(245,158,11,.13)',border:'rgba(245,158,11,.4)',text:'#f59e0b',fbg:'rgba(245,158,11,.08)',ftext:'#f59e0b',fborder:'rgba(245,158,11,.3)'},
+  pink:  {bg:'rgba(236,72,153,.13)',border:'rgba(236,72,153,.4)',text:'#ec4899',fbg:'rgba(236,72,153,.08)',ftext:'#ec4899',fborder:'rgba(236,72,153,.3)'},
+  purple:{bg:'rgba(167,139,250,.13)',border:'rgba(167,139,250,.4)',text:'#a78bfa',fbg:'rgba(167,139,250,.08)',ftext:'#a78bfa',fborder:'rgba(167,139,250,.3)'},
+  teal:  {bg:'rgba(20,184,166,.13)',border:'rgba(20,184,166,.4)',text:'#14b8a6',fbg:'rgba(20,184,166,.08)',ftext:'#14b8a6',fborder:'rgba(20,184,166,.3)'},
+  coral: {bg:'rgba(251,113,133,.13)',border:'rgba(251,113,133,.4)',text:'#fb7185',fbg:'rgba(251,113,133,.08)',ftext:'#fb7185',fborder:'rgba(251,113,133,.3)'},
+  red:   {bg:'rgba(240,78,78,.13)',border:'rgba(240,78,78,.4)',text:'#f04e4e',fbg:'rgba(240,78,78,.08)',ftext:'#f04e4e',fborder:'rgba(240,78,78,.3)'},
+};
+
+// ── DEFAULT FCAT DATA ──────────────────────────────────────────────────────
+const FCAT_DEFAULTS={
+  prev:[
+    {id:'prev-none',label:'None',color:'green',items:['None']},
+    {id:'prev-sr',label:'SR was already created',color:'blue',items:['SR was created already','calling back to ts','calling back to provide SN and do ts','requesting an update/follow-up']},
+  ],
+  today:[
+    {id:'today-ts',label:'Assisted with ts',color:'blue',items:['Assisted with ts','took all info','used likewise','likewise cannot be used','as its hardware related issue','as its about the fridge not available in likewise','as physical defects reported','took consent to share info','likewise resolved the issue','briefed the cat response','sent the follow up email with POP attached','with POP','no further questions','thanked and branded the call','briefed the survey']},
+    {id:'today-chat',label:'Consulted internal chat',color:'teal',items:['Consulted internal chat','with consent to share info','got connected with','mentioned']},
+    {id:'today-oem',label:'Contacted OEM',color:'purple',items:['Contacted OEM','got connected with','shared and briefed the concern']},
+    {id:'today-wt',label:'Warm transfer',color:'amber',items:['Warm transfer requested','no further questions before warm transferring','and warm transferred to the line so that they can assist','thanked and branded']},
+    {id:'today-upd',label:'Provided an update',color:'green',items:['Provided an update','OEM provided an update and briefed the response to Member','through cat','sent the cat reply mentioning the members request']},
+    {id:'today-cat',label:'CAT',color:'coral',items:['Sent a CAT','sent the follow up email with POP attached','advised OEMs or Resolution team will be in touch within 2-3 business days','transferred to t2']},
+    {id:'today-portal',label:'Booked via Portal',color:'pink',items:['Booked a service via Portal','with reference','sent the email confirmation with POP attached','advised service provider assigned by OEMs would be reaching out to confirm the timeframe for the appointment within 2-3 bus. Days']},
+    {id:'today-repair',label:'Repair ticket',color:'amber',items:['Created the repair ticket','the appointment was scheduled via scheduler','member has an email confirmation','advised he should expect the follow-up via email for the box and tracking number within 2-3 bus. days']},
+    {id:'today-nounit',label:'Not with unit',color:'red',items:['member not with the unit','provided sr','will call back with sr provided']},
+    {id:'today-unsup',label:'Unsupported',color:'red',items:['unsupported product','advised reaching out to point of sale','transferred over to point of sale']},
+    {id:'today-close',label:'Closing',color:'green',items:['No further questions','Thanked and branded the call','Briefed the survey']},
+  ],
+  notepad:[
+    {id:'np-ts',label:'Assisted with ts',color:'blue',items:['Assisted with ts','used likewise','likewise cannot be used','as its hardware related issue','took consent to share info','likewise resolved the issue','briefed the cat response','sent the follow up email with POP attached','with POP','no further questions','thanked and branded the call','briefed the survey']},
+    {id:'np-chat',label:'Consulted internal chat',color:'teal',items:['Consulted internal chat','with consent to share info','got connected with','mentioned']},
+    {id:'np-oem',label:'Contacted OEM',color:'purple',items:['Contacted OEM','got connected with','shared and briefed the concern']},
+    {id:'np-wt',label:'Warm transfer',color:'amber',items:['Warm transfer requested','no further questions before warm transferring','and warm transferred to the line so that they can assist','thanked and branded']},
+    {id:'np-upd',label:'Provided an update',color:'green',items:['Provided an update','OEM provided an update and briefed the response to Member','through cat','sent the cat reply mentioning the members request']},
+    {id:'np-cat',label:'CAT',color:'coral',items:['Sent a CAT','sent the follow up email with POP attached','advised OEMs or Resolution team will be in touch within 2-3 business days','transferred to t2']},
+    {id:'np-portal',label:'Booked via Portal',color:'pink',items:['Booked a service via Portal','with reference','sent the email confirmation with POP attached','advised service provider assigned by OEMs would be reaching out to confirm the timeframe for the appointment within 2-3 bus. Days']},
+    {id:'np-repair',label:'Repair ticket',color:'amber',items:['Created the repair ticket','the appointment was scheduled via scheduler','member has an email confirmation','advised he should expect the follow-up via email for the box and tracking number within 2-3 bus. days']},
+    {id:'np-prev',label:'Actions already taken',color:'coral',items:['None','SR was already created','calling back to ts','calling back to provide SN and do ts','requesting an update/follow-up']},
+    {id:'np-nounit',label:'Not with unit',color:'red',items:['member not with the unit','provided sr','will call back with sr provided']},
+    {id:'np-unsup',label:'Unsupported',color:'red',items:['unsupported product','advised reaching out to point of sale','transferred over to point of sale']},
+    {id:'np-close',label:'Closing',color:'green',items:['No further questions','Thanked and branded the call','Briefed the survey']},
+  ]
+};
+
+function loadFcats(){
+  if(LIVE.fcats&&Object.keys(LIVE.fcats).length>0)return LIVE.fcats;
+  try{const r=localStorage.getItem('tt_fcats');if(r){const p=JSON.parse(r);LIVE.fcats=p;return p;}}catch(e){}
+  const def=JSON.parse(JSON.stringify(FCAT_DEFAULTS));
+  LIVE.fcats=def;
+  return def;
+}
+function saveFcats(data){
+  LIVE.fcats=data;
+  try{localStorage.setItem('tt_fcats',JSON.stringify(data));}catch(e){}
+  markUnsaved();
+}
+
+// ── RENDER FCAT PANELS ────────────────────────────────────────────────────
+function renderFcats(scope,containerId,targetFieldId){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const data=loadFcats();
+  const cats=data[scope]||[];
+  let html='<div class="fcat-row" style="margin-bottom:6px">';
+  cats.forEach((cat,ci)=>{
+    const c=FCAT_COLORS[cat.color]||FCAT_COLORS.blue;
+    html+=`<button class="fcat-toggle" id="ftog-${scope}-${ci}"
+      style="background:${c.bg};border-color:${c.border};color:${c.text}"
+      onclick="toggleFcatDyn('${scope}',${ci},'${containerId}')">
+      <svg viewBox="0 0 10 10"><path d="M3 5h4M5 3v4"/></svg>${cat.label}
+    </button>`;
+  });
+  html+='</div>';
+  cats.forEach((cat,ci)=>{
+    const c=FCAT_COLORS[cat.color]||FCAT_COLORS.blue;
+    html+=`<div class="fcat-btns" id="fpanel-${scope}-${ci}" style="background:${c.fbg};border-color:${c.fborder}">`;
+    cat.items.forEach((item,ii)=>{
+      const safe=item.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      html+=`<button class="fb" style="background:${c.fbg};border-color:${c.fborder};color:${c.ftext}" onclick="insertFb('${targetFieldId}','${safe}')">${item}</button><button class="fb-del" onclick="deleteBtn('${scope}',${ci},${ii})" title="Remove">×</button>`;
+    });
+    html+=`<div class="fcat-add-row">
+      <input type="text" id="fcat-addinput-${scope}-${ci}" placeholder="Add button text..." onkeydown="if(event.key==='Enter')addBtn('${scope}',${ci},'${targetFieldId}')">
+      <button onclick="addBtn('${scope}',${ci},'${targetFieldId}')" style="border-color:${c.fborder};color:${c.ftext}">+ Add</button>
+    </div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+function toggleFcatDyn(scope,ci,containerId){
+  const panel=document.getElementById('fpanel-'+scope+'-'+ci);
+  const btn=document.getElementById('ftog-'+scope+'-'+ci);
+  if(!panel||!btn)return;
+  const isOpen=panel.classList.contains('open');
+  // close all in this container
+  document.querySelectorAll('[id^="fpanel-'+scope+'-"]').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('[id^="ftog-'+scope+'-"]').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){panel.classList.add('open');btn.classList.add('open');}
+}
+
+function addBtn(scope,ci,targetId){
+  const inp=document.getElementById('fcat-addinput-'+scope+'-'+ci);
+  if(!inp||!inp.value.trim())return;
+  const data=loadFcats();
+  data[scope][ci].items.push(inp.value.trim());
+  saveFcats(data);
+  renderAllFcats();
+  // reopen the panel
+  setTimeout(()=>{
+    document.querySelectorAll('[id^="fpanel-'+scope+'-"]').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('[id^="ftog-'+scope+'-"]').forEach(b=>b.classList.remove('open'));
+    const p=document.getElementById('fpanel-'+scope+'-'+ci);
+    const b=document.getElementById('ftog-'+scope+'-'+ci);
+    if(p)p.classList.add('open');if(b)b.classList.add('open');
+  },50);
+  toast('Button added');
+}
+
+function deleteBtn(scope,ci,ii){
+  const data=loadFcats();
+  data[scope][ci].items.splice(ii,1);
+  saveFcats(data);
+  renderAllFcats();
+}
+
+function addCategory(scope){
+  const nameInputId=scope+'-new-cat-name'||'prev-new-cat-name';
+  const colorInputId=scope+'-new-cat-color';
+  const nameEl=document.getElementById(nameInputId);
+  const colorEl=document.getElementById(colorInputId);
+  if(!nameEl||!nameEl.value.trim()){toast('Enter a category name','err');return;}
+  const data=loadFcats();
+  if(!data[scope])data[scope]=[];
+  const newId=scope+'-cat-'+Date.now();
+  data[scope].push({id:newId,label:nameEl.value.trim(),color:colorEl?colorEl.value:'blue',items:[]});
+  saveFcats(data);
+  nameEl.value='';
+  renderAllFcats();
+  toast('Category added — open it to add buttons');
+}
+
+function renderAllFcats(){
+  renderFcats('prev','fcat-prev-dynamic','f-prev');
+  renderFcats('today','fcat-today-dynamic','f-today');
+  renderFcats('notepad','fcat-notepad-dynamic','sn-input');
+}
+
+function insertFb(targetId, text){
+  const el=document.getElementById(targetId);
+  if(!el)return;
+  const cur=el.value;
+  const trimmed=cur.trimEnd();
+  let sep='';
+  if(trimmed.length>0){
+    const last=trimmed[trimmed.length-1];
+    if(last!==','&&last!==';'&&last!=='\n') sep=', ';
+    else sep=' ';
+  }
+  el.value=trimmed+sep+text;
+  el.focus();
+  el.setSelectionRange(el.value.length,el.value.length);
+  el.scrollTop=el.scrollHeight;
+}
+
+
+function markUnsaved(){
+  LIVE.unsaved=true;
+  const el=document.getElementById('storage-txt');
+  if(el)el.textContent='Unsaved changes';
+  const btn=document.getElementById('save-file-btn');
+  if(btn){btn.style.background='var(--amber)';btn.style.color='#000';btn.style.borderColor='var(--amber)';}
+}
+
+function markSaved(){
+  LIVE.unsaved=false;
+  const el=document.getElementById('storage-txt');
+  if(el)el.textContent='Saved to file';
+  const btn=document.getElementById('save-file-btn');
+  if(btn){btn.style.background='';btn.style.color='';btn.style.borderColor='';}
+  setTimeout(()=>{if(el&&!LIVE.unsaved)el.textContent='';},2500);
+}
+
+function saveToFile(){
+  // Build the updated savedata block
+  const saveData={
+    sig:LIVE.sig||getSIG(),
+    notes:LIVE.notes||loadNotes(),
+    stickies:[],
+    fcats:LIVE.fcats||loadFcats(),
+    db:LIVE.db||DB
+  };
+  const json=JSON.stringify(saveData,null,2);
+  const newBlock='/* ===SAVEDATA===\n'+json+'\n===SAVEDATA=== */';
+
+  // Get current file source and replace the savedata block
+  const src=document.documentElement.outerHTML;
+  const updated=src.replace(/\/\* ===SAVEDATA===([\s\S]*?)===SAVEDATA=== \*\//,newBlock);
+
+  // Download the updated file
+  const blob=new Blob([updated],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='ticket-tracker.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  markSaved();
+  toast('File saved — replace your old file with the downloaded one');
+}
+
+function updateSigDisplay(){
+  const sig=getSIG();
+  const inp=document.getElementById('sig-input');
+  const prev=document.getElementById('sig-preview');
+  if(inp)inp.value=sig;
+  if(prev)prev.textContent=sig?'Will appear as: '+sig:'No signature set';
+}
+
+function updateKPIs(){
+  const today=new Date().toDateString();
+  const td=DB.log.filter(t=>new Date(t.ts).toDateString()===today).length;
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+
+}
+
+
+function setMethod(m){
+  cMethod=m;
+  document.getElementById('tog-phone').className='tog'+(m==='phone'?' phone':'');
+  document.getElementById('tog-email').className='tog'+(m==='email'?' email':'');
+}
+
+
+function hl(t,q){if(!q)return t;return t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>');}
+
+function ac(iid,did,dbk){
+  const q=document.getElementById(iid).value.trim().toLowerCase();
+  const sorted=[...DB[dbk]].sort((a,b)=>b.freq-a.freq);
+  const filtered=q?sorted.filter(x=>x.text.toLowerCase().includes(q)):sorted.slice(0,10);
+  const drop=document.getElementById(did);
+  if(!filtered.length){drop.classList.remove('open');return;}
+  drop.innerHTML=filtered.slice(0,9).map(item=>`<div class="ac-item" onmousedown="pickAC(event,'${iid}','${did}','${item.text.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">
+    <div style="flex:1"><div class="ac-text">${hl(item.text,q)}</div>${item.freq>0?`<div class="freq-bar" style="width:${Math.min(item.freq*15,100)}%"></div>`:''}</div>
+    ${item.freq>0?`<span class="ac-meta">${item.freq}x</span>`:''}
+  </div>`).join('');
+  drop.classList.add('open');
+}
+
+function pickAC(e,iid,did,text){
+  e.preventDefault();
+  document.getElementById(did).classList.remove('open');
+  const km={'f-issue':'issue'};
+  const key=km[iid];
+  document.getElementById(iid).value='';
+  if(key&&!sel[key].includes(text)){sel[key].push(text);renderChips(key,'chips-'+key);}
+}
+
+function renderChips(key,elId){
+  document.getElementById(elId).innerHTML=sel[key].map((t,i)=>
+    `<div class="chip" onclick="removeChip('${key}','${elId}',${i})"><span>${t}</span><span style="font-size:14px;color:var(--text3)">×</span></div>`).join('');
+}
+function removeChip(key,elId,i){sel[key].splice(i,1);renderChips(key,elId);}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.ac-wrap')&&e.target.id!=='f-sr')
+    document.querySelectorAll('.ac-drop').forEach(d=>d.classList.remove('open'));
+});
+
+function gv(id){return(document.getElementById(id)||{}).value||'';}
+
+function getIssue(){const m=gv('f-issue').trim();return[...sel.issue,...(m&&!sel.issue.includes(m)?[m]:[])].join('; ');}
+function getPrev(){return gv('f-prev').trim();}
+function getToday(){return gv('f-today').trim();}
+
+function buildTicket(){
+  const sr=gv('f-sr').trim();
+  const issue=getIssue();
+  const repairs=gv('f-repairs').trim()||'0';
+  const prev=getPrev();
+  const today=getToday();
+  if(!sr){toast('SR# is required','err');return;}
+  if(!issue){toast('Issue is required','err');return;}
+  const ml=cMethod==='phone'?'Phone first':'Email first';
+  const s=`SR#${sr} / ${ml} / Issue: ${issue} / #of repairs: ${repairs} / What actions already been taken: ${prev||'N/A'} / Actions taken today: ${today||'N/A'} / ${getSIG()}`;
+  document.getElementById('output').textContent=s;
+  incFreq('issues',issue.split('; '));
+  incFreq('actions',[...getToday().split('. '),...getPrev().split('; ')]);
+  save();
+  navigator.clipboard.writeText(s).catch(()=>{});
+  toast('Ticket built & copied to clipboard');
+}
+
+function incFreq(dbk,texts){texts.forEach(t=>{const item=DB[dbk].find(x=>x.text===t.trim());if(item)item.freq++;});}
+
+function archiveTicket(){
+  buildTicket();
+  const out=document.getElementById('output').textContent;
+  if(out.startsWith('Fill'))return;
+  DB.log.unshift({ts:new Date().toISOString(),sr:gv('f-sr').trim(),name:'',method:cMethod,issue:getIssue(),repairs:gv('f-repairs').trim()||'0',prev:getPrev(),today:getToday(),full:out});
+  save();toast('Ticket archived');clearForm();updateKPIs();
+}
+
+function clearForm(){
+  ['f-sr','f-issue','f-repairs','f-prev','f-today'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  sel={issue:[]};
+  renderChips('issue','chips-issue');
+  // close all fcat panels
+  document.querySelectorAll('.fcat-btns.open').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.fcat-toggle.open').forEach(b=>b.classList.remove('open'));
+  document.getElementById('output').textContent='Fill the fields on the left and click Build ticket.';
+  setMethod('phone');
+}
+
+function copyOut(){navigator.clipboard.writeText(document.getElementById('output').textContent).catch(()=>{});toast('Copied to clipboard');}
+
+function quickSave(dbk,iid){
+  const v=document.getElementById(iid).value.trim();
+  if(!v)return;
+  if(DB[dbk].find(x=>x.text===v)){toast('Already in database','err');return;}
+  DB[dbk].push(dbk==='issues'?{text:v,cat:'hardware',freq:0}:{text:v,freq:0});
+  document.getElementById(iid).value='';
+  save();toast('Saved to '+dbk);updateKPIs();
+}
+
+function toast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast '+(type==='ok'?'tok':'terr');el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2400);
+}
+
+
+
+
+function exportAll(){dl(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}),'tickettracker_backup_'+new Date().toISOString().slice(0,10)+'.json');toast('Backup downloaded');}
+function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+
+
+
+
+
+
+
+function delItem(key,i){DB[key].splice(i,1);save();key==='issues'?renderIssueList():renderActionList();}
+
+
+
+
+function toggleSidebar(){
+  const shell=document.querySelector('.shell');
+  const sidebar=document.querySelector('.sidebar');
+  const icon=document.getElementById('toggle-icon');
+  const isCollapsed=shell.classList.contains('collapsed');
+  if(isCollapsed){
+    shell.classList.remove('collapsed');
+    sidebar.classList.remove('collapsed');
+    if(icon)icon.style.transform='none';
+    try{localStorage.setItem('tt_sidebar','open');}catch(e){}
+  } else {
+    shell.classList.add('collapsed');
+    sidebar.classList.add('collapsed');
+    if(icon)icon.style.transform='rotate(90deg)';
+    try{localStorage.setItem('tt_sidebar','collapsed');}catch(e){}
+  }
+}
+(function(){
+  try{if(localStorage.getItem('tt_sidebar')==='collapsed'){
+    document.querySelector('.shell').classList.add('collapsed');
+    document.querySelector('.sidebar').classList.add('collapsed');
+    const icon=document.getElementById('toggle-icon');
+    if(icon)icon.style.transform='rotate(90deg)';
+  }}catch(e){}
+})();
+
+
+updateKPIs();
+updateSigDisplay();
+renderAllFcats();
+renderStickyNotes();
+
+
+
+// ── CUSTOMISE ────────────────────────────────────────────────────────────────
+let custScope='prev';
+
+function setCustTab(scope,btn){
+  custScope=scope;
+  document.querySelectorAll('.cust-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCustPage();
+}
+
+function renderCustPage(){
+  const data=loadFcats();
+  const cats=data[custScope]||[];
+  const el=document.getElementById('cust-cat-list');
+  if(!el)return;
+  if(!cats.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:16px;text-align:center">No categories yet. Add one above.</div>';
+    return;
+  }
+  el.innerHTML=cats.map((cat,ci)=>{
+    const c=FCAT_COLORS[cat.color]||FCAT_COLORS.blue;
+    return`<div class="cust-cat-block">
+      <div class="cust-cat-hdr" onclick="toggleCustCat(${ci})">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:10px;height:10px;border-radius:50%;background:${c.dot};flex-shrink:0"></div>
+          <span class="cust-cat-title" style="color:${c.dot}">${cat.label}</span>
+          <span style="font-size:11px;color:var(--text3);font-family:var(--mono)">${cat.items.length} buttons</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="btn btn-sm btn-d" onclick="event.stopPropagation();custDelCat(${ci})" style="font-size:10px;padding:3px 8px">Remove</button>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="var(--text3)" stroke-width="1.8" stroke-linecap="round" id="cust-chevron-${ci}"><path d="M3 4.5l3 3 3-3"/></svg>
+        </div>
+      </div>
+      <div class="cust-cat-body" id="cust-body-${ci}">
+        <div class="cust-btn-grid">
+          ${cat.items.map((item,ii)=>`<div class="cust-btn-item"><span>${item}</span><button class="cust-btn-del" onclick="custDelBtn(${ci},${ii})" title="Remove">×</button></div>`).join('')}
+        </div>
+        <div class="cust-add-btn-row">
+          <input type="text" id="cust-btn-input-${ci}" placeholder="Add button text..." onkeydown="if(event.key==='Enter')custAddBtn(${ci})">
+          <button class="btn btn-sm btn-p" onclick="custAddBtn(${ci})">+ Add</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCustCat(ci){
+  const body=document.getElementById('cust-body-'+ci);
+  const chev=document.getElementById('cust-chevron-'+ci);
+  if(!body)return;
+  const open=body.classList.contains('open');
+  // close all
+  document.querySelectorAll('.cust-cat-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('[id^="cust-chevron-"]').forEach(c=>c.style.transform='');
+  if(!open){
+    body.classList.add('open');
+    if(chev)chev.style.transform='rotate(180deg)';
+  }
+}
+
+function custAddBtn(ci){
+  const inp=document.getElementById('cust-btn-input-'+ci);
+  if(!inp||!inp.value.trim()){return;}
+  const data=loadFcats();
+  if(!data[custScope]||!data[custScope][ci])return;
+  data[custScope][ci].items.push(inp.value.trim());
+  saveFcats(data);
+  const val=inp.value;
+  renderCustPage();
+  renderAllFcats();
+  // reopen the panel that was open
+  setTimeout(()=>{
+    const b=document.getElementById('cust-body-'+ci);
+    const ch=document.getElementById('cust-chevron-'+ci);
+    if(b){b.classList.add('open');}
+    if(ch)ch.style.transform='rotate(180deg)';
+  },10);
+  toast('Button added');
+}
+
+function custDelBtn(ci,ii){
+  const data=loadFcats();
+  if(!data[custScope]||!data[custScope][ci])return;
+  data[custScope][ci].items.splice(ii,1);
+  saveFcats(data);
+  renderCustPage();
+  renderAllFcats();
+  // reopen
+  setTimeout(()=>{
+    const b=document.getElementById('cust-body-'+ci);
+    const ch=document.getElementById('cust-chevron-'+ci);
+    if(b)b.classList.add('open');
+    if(ch)ch.style.transform='rotate(180deg)';
+  },10);
+}
+
+function custDelCat(ci){
+  if(!confirm('Remove this category and all its buttons?'))return;
+  const data=loadFcats();
+  if(!data[custScope])return;
+  data[custScope].splice(ci,1);
+  saveFcats(data);
+  renderCustPage();
+  renderAllFcats();
+  toast('Category removed');
+}
+
+function custAddCategory(){
+  const name=document.getElementById('cust-cat-name').value.trim();
+  const color=document.getElementById('cust-cat-color').value;
+  if(!name){toast('Enter a category name','err');return;}
+  const data=loadFcats();
+  if(!data[custScope])data[custScope]=[];
+  data[custScope].push({id:custScope+'-cat-'+Date.now(),label:name,color,items:[]});
+  saveFcats(data);
+  document.getElementById('cust-cat-name').value='';
+  renderCustPage();
+  renderAllFcats();
+  // open the newly added category
+  setTimeout(()=>{
+    const cats=loadFcats()[custScope]||[];
+    const newIdx=cats.length-1;
+    const b=document.getElementById('cust-body-'+newIdx);
+    const ch=document.getElementById('cust-chevron-'+newIdx);
+    if(b)b.classList.add('open');
+    if(ch)ch.style.transform='rotate(180deg)';
+  },10);
+  toast('Category added — open it to add buttons');
+}
+
+// ── STICKY NOTES ──────────────────────────────────────────────────────────────
+const SN_COLORS={
+  amber:{bg:'rgba(245,158,11,.15)',border:'rgba(245,158,11,.3)',dot:'#f59e0b'},
+  blue:{bg:'rgba(79,142,247,.15)',border:'rgba(79,142,247,.3)',dot:'#4f8ef7'},
+  green:{bg:'rgba(62,207,142,.15)',border:'rgba(62,207,142,.3)',dot:'#3ecf8e'},
+  purple:{bg:'rgba(167,139,250,.15)',border:'rgba(167,139,250,.3)',dot:'#a78bfa'},
+  coral:{bg:'rgba(251,113,133,.15)',border:'rgba(251,113,133,.3)',dot:'#fb7185'},
+  gray:{bg:'rgba(107,114,128,.15)',border:'rgba(107,114,128,.3)',dot:'#9ca3af'},
+};
+let snColor='amber';
+
+function selectSNColor(el){
+  document.querySelectorAll('.sn-dot').forEach(d=>d.classList.remove('sel'));
+  el.classList.add('sel');
+  snColor=el.dataset.color;
+}
+
+function loadNotes(){
+  if(LIVE.notes&&LIVE.notes.length)return LIVE.notes;
+  try{const r=localStorage.getItem('tt_notes');if(r)return JSON.parse(r);}catch(e){}
+  return[];
+}
+function saveNotes(arr){
+  LIVE.notes=arr;
+  try{localStorage.setItem('tt_notes',JSON.stringify(arr));}catch(e){}
+  markUnsaved();
+}
+
+function addStickyNote(){
+  const inp=document.getElementById('sn-input');
+  const text=inp?inp.value.trim():'';
+  if(!text){toast('Write something first','err');return;}
+  const notes=loadNotes();
+  notes.unshift({id:'n'+Date.now(),text,color:snColor,ts:new Date().toISOString()});
+  saveNotes(notes);
+  inp.value='';
+  renderStickyNotes();
+  toast('Note saved');
+}
+
+function delNote(id){
+  const notes=loadNotes().filter(n=>n.id!==id);
+  saveNotes(notes);
+  renderStickyNotes();
+}
+
+function editNote(id,newText){
+  const notes=loadNotes();
+  const n=notes.find(x=>x.id===id);
+  if(n)n.text=newText;
+  saveNotes(notes);
+}
+
+function renderStickyNotes(){
+  const grid=document.getElementById('sn-grid');
+  if(!grid)return;
+  const notes=loadNotes();
+  if(!notes.length){
+    grid.innerHTML='<div class="sn-empty">No notes yet — add your first one above.</div>';
+    return;
+  }
+  grid.innerHTML=notes.map(n=>{
+    const c=SN_COLORS[n.color]||SN_COLORS.amber;
+    const d=new Date(n.ts).toLocaleDateString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    return`<div class="sn-card" style="background:${c.bg};border:1px solid ${c.border}">
+      <button class="sn-del" onclick="delNote('${n.id}')" title="Delete">×</button>
+      <div class="sn-body" contenteditable="true" onblur="editNote('${n.id}',this.innerText.trim())">${n.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="sn-meta">${d}</div>
+    </div>`;
+  }).join('');
+}
+
+// Allow Ctrl+Enter to add note quickly
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey&&e.key==='Enter'&&document.activeElement.id==='sn-input'){
+    e.preventDefault();addStickyNote();
+  }
+});
+
+// ── THEME TOGGLE ────────────────────────────────────────────────────────────
+function applyTheme(mode){
+  if(mode==='light'){
+    document.body.classList.add('light');
+    const icon=document.getElementById('theme-icon');
+    const lbl=document.getElementById('theme-lbl');
+    if(icon)icon.textContent='☀️';
+    if(lbl)lbl.textContent='Light';
+  } else {
+    document.body.classList.remove('light');
+    const icon=document.getElementById('theme-icon');
+    const lbl=document.getElementById('theme-lbl');
+    if(icon)icon.textContent='🌙';
+    if(lbl)lbl.textContent='Dark';
+  }
+}
+
+function toggleTheme(){
+  const isLight=document.body.classList.contains('light');
+  const newMode=isLight?'dark':'light';
+  applyTheme(newMode);
+  try{localStorage.setItem('tt_theme',newMode);}catch(e){}
+}
+
+// Apply saved theme on load
+(function(){
+  try{const t=localStorage.getItem('tt_theme');if(t)applyTheme(t);}catch(e){}
+})();
+
+document.addEventListener('keydown', function(e){
+  const onNewTicket = document.getElementById('page-new').classList.contains('active');
+
+  // Ctrl+Enter — Build ticket + auto-copy (works even inside textareas)
+  if(e.ctrlKey && e.key==='Enter'){
+    if(onNewTicket){ e.preventDefault(); buildTicket(); }
+    return;
+  }
+
+  // Ctrl+Space — New ticket (clear form, navigate to new ticket page)
+  if(e.ctrlKey && e.key===' '){
+    e.preventDefault();
+    const navBtn=document.getElementById('nav-new');
+    if(navBtn && !onNewTicket){ nav('new', navBtn); }
+    clearForm();
+    setTimeout(()=>{ const sr=document.getElementById('f-sr'); if(sr)sr.focus(); },50);
+    return;
+  }
+});
+// ── MICROPHONE / SPEECH TO TEXT ───────────────────────────────────────────────
+let micRecognition = null;
+let micActive = false;
+let micTargetId = null;
+let micBtnId = null;
+let micLblId = null;
+
+function toggleMic(targetId, btnId, lblId){
+  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
+    toast('Use Chrome or Edge for dictation','err');
+    return;
+  }
+  // If already listening to the same field — stop
+  if(micActive && micTargetId === targetId){ stopMic(false); return; }
+  // If listening to a different field — stop that first silently
+  if(micActive){ stopMic(true); }
+  startMic(targetId, btnId, lblId);
+}
+
+function startMic(targetId, btnId, lblId){
+  micTargetId = targetId;
+  micBtnId = btnId;
+  micLblId = lblId;
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  micRecognition = new SR();
+  micRecognition.continuous = true;
+  micRecognition.interimResults = true;
+  micRecognition.lang = 'en-CA';
+
+  const btn = document.getElementById(btnId);
+  const lbl = document.getElementById(lblId);
+  const ta  = document.getElementById(targetId);
+  if(btn) btn.classList.add('listening');
+  if(lbl) lbl.textContent = 'Listening...';
+  micActive = true;
+
+  let baseText = ta ? ta.value.trimEnd() : '';
+  if(baseText && !baseText.endsWith(',') && !baseText.endsWith('.'))
+    baseText += ', ';
+
+  micRecognition.onresult = function(event){
+    let interim = '';
+    let finalTxt = '';
+    for(let i = event.resultIndex; i < event.results.length; i++){
+      const t = event.results[i][0].transcript;
+      if(event.results[i].isFinal) finalTxt += t;
+      else interim += t;
+    }
+    if(finalTxt){
+      baseText = ta.value.trimEnd();
+      if(baseText && !baseText.endsWith(',') && !baseText.endsWith('.'))
+        baseText += ', ';
+      baseText += finalTxt.trim();
+      ta.value = baseText;
+    } else {
+      ta.value = baseText + interim;
+    }
+    ta.scrollTop = ta.scrollHeight;
+  };
+
+  micRecognition.onerror = function(e){
+    // no-speech is normal during pauses — do NOT stop or toast
+    if(e.error === 'no-speech') return;
+    if(e.error === 'aborted') return;
+    toast('Mic: ' + e.error, 'err');
+    stopMic(false);
+  };
+
+  micRecognition.onend = function(){
+    // Auto-restart if still active (Chrome stops after silence)
+    if(micActive && micRecognition){
+      try{ micRecognition.start(); }catch(e){}
+    }
+  };
+
+  try{ micRecognition.start(); }catch(e){ toast('Could not start mic','err'); micActive=false; }
+}
+
+function stopMic(silent){
+  micActive = false;
+  if(micRecognition){
+    micRecognition.onend = null;
+    micRecognition.onerror = null;
+    try{ micRecognition.stop(); }catch(e){}
+    micRecognition = null;
+  }
+  const btn = document.getElementById(micBtnId);
+  const lbl = document.getElementById(micLblId);
+  if(btn) btn.classList.remove('listening');
+  if(lbl) lbl.textContent = 'Dictate';
+  if(!silent) toast('Dictation saved');
+  micTargetId = null; micBtnId = null; micLblId = null;
+}
+
+
+
+</script>
+</body>
+</html>
